@@ -1,6 +1,6 @@
 ﻿namespace ShahinApis.Data.Model;
 
-public class GetTokenResDto
+public class GetAccessTokenResDto
 {
     public string access_token { get; init; }
     public string token_type { get; init; }
