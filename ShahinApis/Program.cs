@@ -1,6 +1,4 @@
-using System.Net.Http;
 using Microsoft.EntityFrameworkCore;
-using Microsoft.Extensions.Configuration;
 using ShahinApis.Data;
 using ShahinApis.Data.Model;
 using ShahinApis.Data.Repository;

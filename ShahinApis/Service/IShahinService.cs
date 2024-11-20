@@ -8,6 +8,7 @@ public interface IShahinService
     Task<OutputModel> PostChequeInquiry(ChequeInquiryReqDto request);
     Task<OutputModel> PostChequeAccept(ChequeAcceptReqDto request);
     Task<OutputModel> PostChequeInquiryTransfer(ChequeInquiryTransferReqDto request);
+    Task<OutputModel> PostChequeInquiryHolder(ChequeInquiryHolderReqDto request);
 
 }
 
