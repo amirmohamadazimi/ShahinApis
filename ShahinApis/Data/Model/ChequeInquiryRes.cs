@@ -1,6 +1,8 @@
-﻿namespace ShahinApis.Data.Model;
+﻿using ShahinApis.ErrorHandling;
 
-public class ChequeInquiryRes
+namespace ShahinApis.Data.Model;
+
+public class ChequeInquiryRes : ErrorResult
 {
     public string transactionState { get; init; }
     public long transactionTime { get; init; }
