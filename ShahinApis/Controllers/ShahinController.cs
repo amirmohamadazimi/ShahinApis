@@ -69,9 +69,9 @@ namespace ShahinApis.Controllers
         /// <returns></returns>
         [AllowAnonymous]
         [HttpPost("ChequeInquiry")]
-        [ProducesResponseType(StatusCodes.Status200OK, Type = typeof(OutputModel))]
-        [ProducesResponseType(StatusCodes.Status400BadRequest, Type = typeof(OutputModel))]
-        [ProducesResponseType(StatusCodes.Status404NotFound, Type = typeof(OutputModel))]
+        [ProducesResponseType(StatusCodes.Status200OK, Type = typeof(ChequeInquiryResDto))]
+        [ProducesResponseType(StatusCodes.Status400BadRequest, Type = typeof(ChequeInquiryResDto))]
+        [ProducesResponseType(StatusCodes.Status404NotFound, Type = typeof(ChequeInquiryResDto))]
         public async Task<ActionResult<ChequeInquiryResDto>> PostChequeInquiry(ChequeInquiryReqDto request)
         {
             var result = await _shahinService.PostChequeInquiry(request);
@@ -82,7 +82,7 @@ namespace ShahinApis.Controllers
                     return Ok(_baseLog.ApiResponseSuccessByCodeProvider<ChequeInquiryResDto>(result.Content, result.StatusCode,
                         result.ReqLogId, result.RequestId));
 
-                _logger.LogError($"{nameof(GetShahinToken)} not-success request - input \r\n" +
+                _logger.LogError($"{nameof(PostChequeInquiry)} not-success request - input \r\n" +
                 $"response:{result.StatusCode}-{result.Content}");
 
                 return BadRequest(_baseLog.ApiResponeFailByCodeProvider<ChequeInquiryResDto>(result.Content,
@@ -90,10 +90,79 @@ namespace ShahinApis.Controllers
             }
             catch (Exception ex)
             {
-                _logger.LogError(ex, $"Exception occurred while {nameof(GetShahinToken)}");
+                _logger.LogError(ex, $"Exception occurred while {nameof(PostChequeInquiry)}");
                 throw new RamzNegarException(ErrorCode.InternalError, $"Exception occurred while:" +
-                                                                      $" {nameof(GetShahinToken)} => {ex.Message}");
+                                                                      $" {nameof(PostChequeInquiry)} => {ex.Message}");
             }
         }
+
+        /// <summary>
+        /// استعلام وضعیت اعتباری چک
+        /// </summary>
+        /// <param name="ChequeInquiry"></param>
+        /// <returns></returns>
+        [AllowAnonymous]
+        [HttpPost("ChequeAcceptation")]
+        [ProducesResponseType(StatusCodes.Status200OK, Type = typeof(ChequeAcceptResDto))]
+        [ProducesResponseType(StatusCodes.Status400BadRequest, Type = typeof(ChequeAcceptResDto))]
+        [ProducesResponseType(StatusCodes.Status404NotFound, Type = typeof(ChequeAcceptResDto))]
+        public async Task<ActionResult<ChequeAcceptResDto>> PostChequeAccept(ChequeAcceptReqDto request)
+        {
+            var result = await _shahinService.PostChequeAccept(request);
+
+            try
+            {
+                if (result.StatusCode is "OK")
+                    return Ok(_baseLog.ApiResponseSuccessByCodeProvider<ChequeAcceptResDto>(result.Content, result.StatusCode,
+                        result.ReqLogId, result.RequestId));
+
+                _logger.LogError($"{nameof(PostChequeInquiry)} not-success request - input \r\n" +
+                $"response:{result.StatusCode}-{result.Content}");
+
+                return BadRequest(_baseLog.ApiResponeFailByCodeProvider<ChequeAcceptResDto>(result.Content,
+                    result.StatusCode, result.ReqLogId, result.RequestId));
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, $"Exception occurred while {nameof(PostChequeInquiry)}");
+                throw new RamzNegarException(ErrorCode.InternalError, $"Exception occurred while:" +
+                                                                      $" {nameof(PostChequeInquiry)} => {ex.Message}");
+            }
+        }
+
+        /// <summary>
+        /// استعلام وضعیت انتقال چک صیاد
+        /// </summary>
+        /// <param name="ChequeInquiry"></param>
+        /// <returns></returns>
+        [AllowAnonymous]
+        [HttpPost("ChequeInquiryTransferStatus")]
+        [ProducesResponseType(StatusCodes.Status200OK, Type = typeof(ChequeInquiryTransferStatusDto))]
+        [ProducesResponseType(StatusCodes.Status400BadRequest, Type = typeof(ChequeInquiryTransferStatusDto))]
+        [ProducesResponseType(StatusCodes.Status404NotFound, Type = typeof(ChequeInquiryTransferStatusDto))]
+        public async Task<ActionResult<ChequeInquiryTransferStatusDto>> PostChequeInquiryTransferStatus(ChequeInquiryTransferReqDto request)
+        {
+            var result = await _shahinService.PostChequeInquiryTransfer(request);
+
+            try
+            {
+                if (result.StatusCode is "OK")
+                    return Ok(_baseLog.ApiResponseSuccessByCodeProvider<ChequeInquiryTransferStatusDto>(result.Content, result.StatusCode,
+                        result.ReqLogId, result.RequestId));
+
+                _logger.LogError($"{nameof(PostChequeInquiry)} not-success request - input \r\n" +
+                $"response:{result.StatusCode}-{result.Content}");
+
+                return BadRequest(_baseLog.ApiResponeFailByCodeProvider<ChequeInquiryTransferStatusDto>(result.Content,
+                    result.StatusCode, result.ReqLogId, result.RequestId));
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, $"Exception occurred while {nameof(PostChequeInquiry)}");
+                throw new RamzNegarException(ErrorCode.InternalError, $"Exception occurred while:" +
+                                                                      $" {nameof(PostChequeInquiry)} => {ex.Message}");
+            }
+        }
+
     }
 }

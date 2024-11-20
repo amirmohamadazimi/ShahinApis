@@ -1,6 +1,4 @@
-﻿using System.Text.Json.Serialization;
-
-namespace ShahinApis.Data.Model;
+﻿namespace ShahinApis.Data.Model;
 
 public class ChequeInquiryResDto
 {
@@ -12,5 +10,4 @@ public class ChequeInquiryResDto
     public string? lastUpdate { get; init; }
     public string? status { get; init; }
     public string? iban { get; init; }
-
 }
