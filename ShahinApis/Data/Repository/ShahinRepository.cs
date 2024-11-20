@@ -1,7 +1,9 @@
-﻿using Microsoft.Extensions.Logging;
+﻿using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Logging;
+using Microsoft.OpenApi.Extensions;
 using Oracle.ManagedDataAccess.Client;
 using ShahinApis.Data.Model;
-using System.Configuration;
+using ShahinApis.ErrorHandling;
 
 namespace ShahinApis.Data.Repository;
 
@@ -69,6 +71,46 @@ public class ShahinRepository : IShahinRepository
             _logger.LogError(ex, $"Exception occurred while {nameof(response)}");
             throw new ApplicationException($"Exception occurred while: {nameof(response)}  => {ex.Message}");
         }
+    }
+
+    public async Task AddOrUpdateTokenAsync(string? accessToken)
+    {
+        var accesTokenEntity = _dbContext.AccessTokens.SingleOrDefault(i => i.Id == "12");
+        if (accesTokenEntity is null)
+        {
+            accesTokenEntity = new AccessTokenEntity
+            {
+                Id = "12",
+                TokenName = "ShahinToken",
+                TokenDateTime = DateTime.Now,
+                AccessToken = accessToken
+            };
+            await _dbContext.AccessTokens.AddAsync(accesTokenEntity).ConfigureAwait(false);
+        }
+
+        accesTokenEntity.AccessToken = accesTokenEntity.AccessToken;
+        accesTokenEntity.TokenDateTime = DateTime.UtcNow;
+
+        try
+        {
+            await _dbContext.SaveChangesAsync().ConfigureAwait(false);
+        }
+        catch (Exception e)
+        {
+            _logger.LogError(e.Message,
+                $"{nameof(AddOrUpdateTokenAsync)} -> applyUpdateToken in AddOrUpdateTokenAsync couldn't update.");
+            throw new RamzNegarException(ErrorCode.InternalError,
+                $"Exception occurred while: {nameof(AddOrUpdateTokenAsync)}  => {ErrorCode.InternalError.GetDisplayName()}");
+        }
+    }
+
+    public async Task<string?> FindShahinAccessToken()
+    {
+        var tokenEntity = await _dbContext.AccessTokens
+            .AsNoTracking()
+            .SingleAsync(x => x.Id == "12");
+
+        return tokenEntity.TokenName is "ShahinToken" ? tokenEntity.AccessToken : null;
     }
 }
 

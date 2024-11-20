@@ -1,9 +1,9 @@
-﻿using System.Diagnostics;
-using System.Text;
+﻿using System.Text;
 using System.Text.Json;
 using Microsoft.Extensions.Options;
 using ShahinApis.Data.Model;
 using ShahinApis.Data.Repository;
+using ShahinApis.ErrorHandling;
 using ShahinApis.Infrastucture;
 
 namespace ShahinApis.Service;
@@ -54,6 +54,8 @@ public class ShahinService : IShahinService
                    JsonSerializer.Deserialize<GetAccessTokenRes>(responseBodyJson,
                        ServiceHelperExtension.JsonSerializerOptions);
 
+                await _shahinRepository.AddOrUpdateTokenAsync(tokenOutput.access_token);
+
                 return new OutputModel
                 {
                     Content = JsonSerializer.Serialize(tokenOutput),
@@ -67,7 +69,59 @@ public class ShahinService : IShahinService
         catch (Exception ex)
         {
             _logger.LogError(ex, $"Exception occurred while {nameof(basePublicLogData)}");
-            throw new System.Exception(ex.Message);
+            throw new Exception(ex.Message);
+        }
+    }
+
+    public async Task<OutputModel> PostChequeInquiry(ChequeInquiryReqDto clientRequest)
+    {
+        try
+        {
+            var timestampHeader = DateTimeOffset.UtcNow.ToUnixTimeMilliseconds().ToString();
+            _logger.LogInformation($"{nameof(PostChequeInquiry)} request sent - input is : \r\n {clientRequest.PublicLogData}");
+
+            var publicRequestId = _httpContextAccessor.HttpContext.Items["RequestId"] = clientRequest.PublicLogData?.PublicReqId;
+            var request = new HttpRequestMessage(HttpMethod.Post, $"{ShahinOptions.ShahinUriService}api/inquiry/cheque-inquiry");
+
+            var requestLogDto = new ShahinRequestLogDto(
+                  clientRequest.PublicLogData.PublicReqId,
+                  clientRequest.ToString(),
+                  clientRequest.PublicLogData.UserId,
+                  clientRequest.PublicLogData.PublicAppId,
+                  clientRequest.PublicLogData.ServiceId);
+            var reqLogId = await _shahinRepository.InsertShahinRequestLog(requestLogDto);
+
+            request.Headers.Add("X-Obh-signature", $"OBH1-HMAC-SHA256;SignedHeaders=X-Obh-uuid,X-Obh-timestamp;Signature={ShahinOptions.RequestSignature}");
+            request.Headers.Add("X-Obh-uuid", $"{Guid.NewGuid()}");
+
+            var accessToken = await _shahinRepository.FindShahinAccessToken();
+
+            request.Headers.Add("X-Obh-timestamp", $"{timestampHeader}");
+            request.Headers.Add("Authorization", $"Bearer {accessToken}");
+
+            request.Content =
+                  new StringContent(
+                      JsonSerializer.Serialize(clientRequest.chequeSerial, ServiceHelperExtension.JsonSerializerOptions),
+              Encoding.UTF8, "application/json");
+
+            var response = await _httpClient.SendAsync(request);
+            var responseBodyJson = await response.Content.ReadAsStringAsync().ConfigureAwait(false);
+
+            var serilizedResponse = JsonSerializer.Deserialize<ChequeInquiryRes>(responseBodyJson,
+                ServiceHelperExtension.JsonSerializerOptions);
+
+            return new OutputModel
+            {
+                Content = JsonSerializer.Serialize(serilizedResponse.respObject),
+                StatusCode = response.StatusCode.ToString(),
+                RequestId = publicRequestId!.ToString(),
+                ReqLogId = reqLogId
+            };
+        }
+        catch (Exception ex)
+        {
+            _logger.LogError(ex, $"Exception occurred while {nameof(clientRequest.PublicLogData)}");
+            throw new Exception(ex.Message);
         }
     }
 }

@@ -9,5 +9,6 @@
         public required string Bank { get; set; }
         public required string ShahinUriService { get; set; }
         public required string ShahinUriToken { get; set; }
+        public required string RequestSignature { get; set; }
     }
 }

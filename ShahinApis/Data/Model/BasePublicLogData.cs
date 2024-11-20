@@ -18,4 +18,3 @@ public record PublicLogData
     public string? ServiceId { get; set; }
     public string? PublicReqId { get; set; }
 }
-

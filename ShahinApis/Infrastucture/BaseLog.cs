@@ -30,7 +30,7 @@ public class BaseLog
     public ErrorResult ApiResponeFailByCodeProvider<T>(string response, string statusCode, string RequestId, string publicReqId) where T : new()
     {
         var codeProvider = new ErrorCodesProvider();
-        codeProvider = codeProvider.errorCodesResponseResult(statusCode.ToString());
+        codeProvider = codeProvider.ErrorCodesResponseResult(statusCode.ToString());
 
         _repository.InsertShahinResponseLog(new ShahinResponseLogDto
             (publicReqId, Convert.ToString(response), codeProvider?.OutReponseCode.ToString(),

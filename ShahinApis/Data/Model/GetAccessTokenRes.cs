@@ -1,6 +1,8 @@
-﻿namespace ShahinApis.Data.Model;
+﻿using ShahinApis.ErrorHandling;
 
-public class GetAccessTokenRes
+namespace ShahinApis.Data.Model;
+
+public class GetAccessTokenRes : ErrorResult
 {
     public string access_token { get; set; }
     public string token_type { get; set; }

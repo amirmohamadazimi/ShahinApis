@@ -6,7 +6,7 @@ public class ErrorCodesProvider
     public int OutReponseCode { get; set; }
     public string? SafeReponseMessage { get; set; }
     public string? SafeReponseMesageDecription { get; set; }
-    public ErrorCodesProvider errorCodesResponseResult(string input) => input switch
+    public ErrorCodesProvider ErrorCodesResponseResult(string input) => input switch
     {
 
         "400" => new ErrorCodesProvider()
