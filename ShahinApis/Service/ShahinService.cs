@@ -30,12 +30,6 @@ public class ShahinService : IShahinService
         try
         {
             {
-                var handler = new HttpClientHandler
-                {
-                    ServerCertificateCustomValidationCallback =
-                (httpRequestMessage, cert, certChain, policyErrors) => true
-                };
-
                 var publicRequestId = _httpContextAccessor.HttpContext.Items["RequestId"] = basePublicLogData.PublicLogData?.PublicReqId;
                 var basicAuthorizationParam =
                     Convert.ToBase64String(Encoding.ASCII.GetBytes($"{ShahinOptions.Username}:{ShahinOptions.Password}"));
@@ -49,13 +43,11 @@ public class ShahinService : IShahinService
                     basePublicLogData.PublicLogData.ServiceId);
 
                 var request = new HttpRequestMessage(HttpMethod.Post, $"{ShahinOptions.ShahinUriToken}token?grant_type={ShahinOptions.GrantType}&bank={ShahinOptions.Bank}");
-                request.Headers.Add("Authorization", "Basic VTBmcHZwdHVJVTp1Z3RsWUF5Q080");
+                request.Headers.Add("Authorization", $"Basic {basicAuthorizationParam}");
 
                 var reqLogId = await _shahinRepository.InsertShahinRequestLog(requestLogDto);
 
-                var client = new HttpClient(handler);
-
-                var response = await client.SendAsync(request).ConfigureAwait(false);
+                var response = await _httpClient.SendAsync(request).ConfigureAwait(false);
                 var responseBodyJson = await response.Content.ReadAsStringAsync().ConfigureAwait(false);
 
                 var tokenOutput =
