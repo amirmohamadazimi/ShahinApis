@@ -53,7 +53,8 @@ public class ShahinRepository : IShahinRepository
             HTTPStatusCode = response.shahinHttpResponseCode,
             JsonRes = response.jsonResponse,
             PublicReqId = response.publicRequestId,
-            ReqLogId = response.shahinRequestId
+            ReqLogId = response.shahinRequestId,
+            ResCode = response.shahinResCode
         };
 
         _dbContext.Shahin_Res.Add(shahinRes);

@@ -12,7 +12,7 @@ using ShahinApis.Data;
 namespace ShahinApis.Migrations
 {
     [DbContext(typeof(ShahinDbContext))]
-    [Migration("20241118124641_Initial")]
+    [Migration("20241120063857_Initial")]
     partial class Initial
     {
         /// <inheritdoc />
@@ -72,8 +72,7 @@ namespace ShahinApis.Migrations
                         .HasColumnType("NVARCHAR2(2000)");
 
                     b.Property<string>("JsonRes")
-                        .IsRequired()
-                        .HasColumnType("NVARCHAR2(2000)");
+                        .HasColumnType("NCLOB");
 
                     b.Property<string>("PublicReqId")
                         .IsRequired()

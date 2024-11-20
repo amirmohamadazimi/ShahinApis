@@ -17,7 +17,7 @@ namespace ShahinApis.Data.Configuration
             builder.Property(entity => entity.PublicReqId).IsRequired();
             builder.Property(entity => entity.HTTPStatusCode).IsRequired();
             builder.Property(entity => entity.ReqLogId).IsRequired();
-            builder.Property(entity => entity.JsonRes).IsRequired();
+            builder.Property(entity => entity.JsonRes).HasColumnType("NCLOB").IsRequired(false);
             builder.HasOne(entity => entity.ReqLog).WithMany(entity => entity.ShahinResLogs)
                 .HasForeignKey(c => c.ReqLogId);
         }

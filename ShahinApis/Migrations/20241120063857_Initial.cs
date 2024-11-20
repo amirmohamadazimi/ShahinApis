@@ -35,7 +35,7 @@ namespace ShahinApis.Migrations
                     Id = table.Column<string>(type: "NVARCHAR2(450)", nullable: false),
                     ResCode = table.Column<string>(type: "NVARCHAR2(2000)", nullable: false),
                     HTTPStatusCode = table.Column<string>(type: "NVARCHAR2(2000)", nullable: false),
-                    JsonRes = table.Column<string>(type: "NVARCHAR2(2000)", nullable: false),
+                    JsonRes = table.Column<string>(type: "NCLOB", nullable: true),
                     PublicReqId = table.Column<string>(type: "NVARCHAR2(2000)", nullable: false),
                     ReqLogId = table.Column<string>(type: "NVARCHAR2(450)", nullable: false)
                 },

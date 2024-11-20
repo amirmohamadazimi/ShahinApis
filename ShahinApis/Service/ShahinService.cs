@@ -29,37 +29,47 @@ public class ShahinService : IShahinService
     {
         try
         {
-            var publicRequestId = _httpContextAccessor.HttpContext.Items["RequestId"] = basePublicLogData.PublicLogData?.PublicReqId;
-            var basicAuthorizationParam =
-                Convert.ToBase64String(Encoding.ASCII.GetBytes($"{ShahinOptions.Username}:{ShahinOptions.Password}"));
-
-            _logger.LogInformation($"{nameof(GetAccessToken)} request sent - input is : \r\n {basePublicLogData}");
-            var requestLogDto = new ShahinRequestLogDto(
-                basePublicLogData.PublicLogData.PublicReqId,
-                basePublicLogData.ToString(),
-                basePublicLogData.PublicLogData.UserId,
-                basePublicLogData.PublicLogData.PublicAppId,
-                basePublicLogData.PublicLogData.ServiceId);
-
-            var request = new HttpRequestMessage(HttpMethod.Post, $"{ShahinOptions.ShahinUriToken}token?grant_type={ShahinOptions.GrantType}&bank={ShahinOptions.Bank}");
-            request.Headers.Add("Authorization", "Basic VTBmcHZwdHVJVTp1Z3RsWUF5Q080");
-
-            var reqLogId = await _shahinRepository.InsertShahinRequestLog(requestLogDto);
-
-            var response = await _httpClient.SendAsync(request).ConfigureAwait(false);
-            var responseBodyJson = await response.Content.ReadAsStringAsync().ConfigureAwait(false);
-
-            var tokenOutput =
-               JsonSerializer.Deserialize<GetAccessTokenRes>(responseBodyJson,
-                   ServiceHelperExtension.JsonSerializerOptions);
-
-            return new OutputModel
             {
-                Content = JsonSerializer.Serialize(tokenOutput),
-                StatusCode = response.StatusCode.ToString(),
-                RequestId = publicRequestId!.ToString(),
-                ReqLogId = reqLogId
-            };
+                var handler = new HttpClientHandler
+                {
+                    ServerCertificateCustomValidationCallback =
+                (httpRequestMessage, cert, certChain, policyErrors) => true
+                };
+
+                var publicRequestId = _httpContextAccessor.HttpContext.Items["RequestId"] = basePublicLogData.PublicLogData?.PublicReqId;
+                var basicAuthorizationParam =
+                    Convert.ToBase64String(Encoding.ASCII.GetBytes($"{ShahinOptions.Username}:{ShahinOptions.Password}"));
+
+                _logger.LogInformation($"{nameof(GetAccessToken)} request sent - input is : \r\n {basePublicLogData}");
+                var requestLogDto = new ShahinRequestLogDto(
+                    basePublicLogData.PublicLogData.PublicReqId,
+                    basePublicLogData.ToString(),
+                    basePublicLogData.PublicLogData.UserId,
+                    basePublicLogData.PublicLogData.PublicAppId,
+                    basePublicLogData.PublicLogData.ServiceId);
+
+                var request = new HttpRequestMessage(HttpMethod.Post, $"{ShahinOptions.ShahinUriToken}token?grant_type={ShahinOptions.GrantType}&bank={ShahinOptions.Bank}");
+                request.Headers.Add("Authorization", "Basic VTBmcHZwdHVJVTp1Z3RsWUF5Q080");
+
+                var reqLogId = await _shahinRepository.InsertShahinRequestLog(requestLogDto);
+
+                var client = new HttpClient(handler);
+
+                var response = await client.SendAsync(request).ConfigureAwait(false);
+                var responseBodyJson = await response.Content.ReadAsStringAsync().ConfigureAwait(false);
+
+                var tokenOutput =
+                   JsonSerializer.Deserialize<GetAccessTokenRes>(responseBodyJson,
+                       ServiceHelperExtension.JsonSerializerOptions);
+
+                return new OutputModel
+                {
+                    Content = JsonSerializer.Serialize(tokenOutput),
+                    StatusCode = response.StatusCode.ToString(),
+                    RequestId = publicRequestId!.ToString(),
+                    ReqLogId = reqLogId
+                };
+            }
         }
 
         catch (Exception ex)

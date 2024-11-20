@@ -2,7 +2,7 @@
 
 public class GetTokenResDto
 {
-    public string Access_Token { get; init; }
+    public string access_token { get; init; }
     public string token_type { get; init; }
     public int expires_in { get; init; }
     public List<string> scope { get; init; }

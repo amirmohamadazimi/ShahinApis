@@ -69,8 +69,7 @@ namespace ShahinApis.Migrations
                         .HasColumnType("NVARCHAR2(2000)");
 
                     b.Property<string>("JsonRes")
-                        .IsRequired()
-                        .HasColumnType("NVARCHAR2(2000)");
+                        .HasColumnType("NCLOB");
 
                     b.Property<string>("PublicReqId")
                         .IsRequired()
