@@ -10,18 +10,16 @@ using ShahinApis.Service;
 var builder = WebApplication.CreateBuilder(args);
 
 // Add services to the container.
-
 builder.Services.AddControllers();
-builder.Services.AddHttpContextAccessor();
 
-builder.Services.AddHttpClient("DevHttpClient")
+builder.Services.AddHttpClient("")
     .ConfigurePrimaryHttpMessageHandler(() =>
         new HttpClientHandler
         {
             ServerCertificateCustomValidationCallback =
                 (httpRequestMessage, cert, certChain, policyErrors) => true
         });
-
+builder.Services.AddHttpContextAccessor();
 
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
