@@ -3,7 +3,6 @@ using System.Text.Json;
 using Microsoft.Extensions.Options;
 using ShahinApis.Data.Model;
 using ShahinApis.Data.Repository;
-using ShahinApis.ErrorHandling;
 using ShahinApis.Infrastucture;
 
 namespace ShahinApis.Service;
@@ -281,6 +280,124 @@ public class ShahinService : IShahinService
             var responseBodyJson = await response.Content.ReadAsStringAsync().ConfigureAwait(false);
 
             var serilizedResponse = JsonSerializer.Deserialize<ChequeInquiryHolderRes>(responseBodyJson,
+                ServiceHelperExtension.JsonSerializerOptions);
+
+            return new OutputModel
+            {
+                Content = JsonSerializer.Serialize(serilizedResponse.respObject),
+                StatusCode = response.StatusCode.ToString(),
+                RequestId = publicRequestId!.ToString(),
+                ReqLogId = reqLogId
+            };
+        }
+        catch (Exception ex)
+        {
+            _logger.LogError(ex, $"Exception occurred while {nameof(clientRequest.PublicLogData)}");
+            throw new Exception(ex.Message);
+        }
+    }
+
+    public async Task<OutputModel> PostCheckIbanNationalCode(CheckIbanNationalcodeReqDto clientRequest)
+    {
+        try
+        {
+            var publicRequestId = _httpContextAccessor.HttpContext!.Items["RequestId"] = clientRequest.PublicLogData?.PublicReqId;
+            var timestampHeader = DateTimeOffset.UtcNow.ToUnixTimeMilliseconds().ToString();
+            _logger.LogInformation($"{nameof(PostCheckIbanNationalCode)} request sent - input is : \r\n {clientRequest.PublicLogData}");
+
+            var request = new HttpRequestMessage(HttpMethod.Post, $"{ShahinOptions.ShahinUriService}inquiry/check-iban-nationalcode");
+
+            var requestLogDto = new ShahinRequestLogDto(
+                  clientRequest.PublicLogData.PublicReqId,
+                  clientRequest.ToString(),
+                  clientRequest.PublicLogData.UserId,
+                  clientRequest.PublicLogData.PublicAppId,
+                  clientRequest.PublicLogData.ServiceId);
+            var reqLogId = await _shahinRepository.InsertShahinRequestLog(requestLogDto);
+
+
+            request.Headers.Add("X-Obh-signature", $"OBH1-HMAC-SHA256;SignedHeaders=X-Obh-uuid,X-Obh-timestamp;Signature={ShahinOptions.RequestSignature}");
+            request.Headers.Add("X-Obh-uuid", $"{Guid.NewGuid()}");
+            var accessToken = await _shahinRepository.FindShahinAccessToken();
+
+            request.Headers.Add("X-Obh-timestamp", $"{timestampHeader}");
+            request.Headers.Add("Authorization", $"Bearer {accessToken}");
+
+            var mainRequest = new CheckIbanNationalcodeReq
+            {
+                birthDate = clientRequest.birthDate,
+                iban = clientRequest.iban,
+                nationalCode = clientRequest.nationalCode,
+            };
+
+            request.Content = new StringContent(JsonSerializer.Serialize(mainRequest), Encoding.UTF8, "application/json");
+
+            var response = await _httpClient.SendAsync(request);
+            var responseBodyJson = await response.Content.ReadAsStringAsync().ConfigureAwait(false);
+
+            var serilizedResponse = JsonSerializer.Deserialize<CheckIbanNationalcodeRes>(responseBodyJson,
+                ServiceHelperExtension.JsonSerializerOptions);
+
+            return new OutputModel
+            {
+                Content = JsonSerializer.Serialize(serilizedResponse.respObject),
+                StatusCode = response.StatusCode.ToString(),
+                RequestId = publicRequestId!.ToString(),
+                ReqLogId = reqLogId
+            };
+        }
+        catch (Exception ex)
+        {
+            _logger.LogError(ex, $"Exception occurred while {nameof(clientRequest.PublicLogData)}");
+            throw new Exception(ex.Message);
+        }
+    }
+
+    public async Task<OutputModel> PostCheckNationalcodeSourceAccount(CheckNationalcodeSourceAccountReqDto clientRequest)
+    {
+        try
+        {
+            var publicRequestId = _httpContextAccessor.HttpContext!.Items["RequestId"] = clientRequest.PublicLogData?.PublicReqId;
+            var timestampHeader = DateTimeOffset.UtcNow.ToUnixTimeMilliseconds().ToString();
+            _logger.LogInformation($"{nameof(PostCheckIbanNationalCode)} request sent - input is : \r\n {clientRequest.PublicLogData}");
+
+            var request = new HttpRequestMessage(HttpMethod.Post, $"{ShahinOptions.ShahinUriService}inquiry/customer-has-account");
+
+            var requestLogDto = new ShahinRequestLogDto(
+                  clientRequest.PublicLogData.PublicReqId,
+                  clientRequest.ToString(),
+                  clientRequest.PublicLogData.UserId,
+                  clientRequest.PublicLogData.PublicAppId,
+                  clientRequest.PublicLogData.ServiceId);
+            var reqLogId = await _shahinRepository.InsertShahinRequestLog(requestLogDto);
+
+
+            request.Headers.Add("X-Obh-signature", $"OBH1-HMAC-SHA256;SignedHeaders=X-Obh-uuid,X-Obh-timestamp;Signature={ShahinOptions.RequestSignature}");
+            request.Headers.Add("X-Obh-uuid", $"{Guid.NewGuid()}");
+            var accessToken = await _shahinRepository.FindShahinAccessToken();
+
+            request.Headers.Add("X-Obh-timestamp", $"{timestampHeader}");
+            request.Headers.Add("Authorization", $"Bearer {accessToken}");
+
+            var mainRequest = new CheckNationalcodeSourceAccountReq
+            {
+                bank = clientRequest.bank,
+                nationalCode = clientRequest.nationalCode,
+                sourceAccount = clientRequest.sourceAccount
+            };
+
+            request.Content = new StringContent(JsonSerializer.Serialize(mainRequest), Encoding.UTF8, "application/json");
+
+            var client = new HttpClient(new HttpClientHandler
+            {
+                ServerCertificateCustomValidationCallback =
+                (httpRequestMessage, cert, certChain, policyErrors) => true
+            });
+
+            var response = await client.SendAsync(request);
+            var responseBodyJson = await response.Content.ReadAsStringAsync().ConfigureAwait(false);
+
+            var serilizedResponse = JsonSerializer.Deserialize<CheckNationalcodeSourceAccountRes>(responseBodyJson,
                 ServiceHelperExtension.JsonSerializerOptions);
 
             return new OutputModel

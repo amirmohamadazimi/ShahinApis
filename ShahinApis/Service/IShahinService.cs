@@ -9,6 +9,7 @@ public interface IShahinService
     Task<OutputModel> PostChequeAccept(ChequeAcceptReqDto request);
     Task<OutputModel> PostChequeInquiryTransfer(ChequeInquiryTransferReqDto request);
     Task<OutputModel> PostChequeInquiryHolder(ChequeInquiryHolderReqDto request);
-
+    Task<OutputModel> PostCheckIbanNationalCode(CheckIbanNationalcodeReqDto request);
+    Task<OutputModel> PostCheckNationalcodeSourceAccount(CheckNationalcodeSourceAccountReqDto request);
 }
 
