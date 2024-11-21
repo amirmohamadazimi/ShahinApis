@@ -20,26 +20,26 @@ public class ChequeInquiryTransferStatus : ErrorResult
 
     public class RespObject
     {
-        public string state { get; set; }
-        public string chequeType { get; set; }
-        public string chequeMedia { get; set; }
-        public string sayadId { get; set; }
-        public string serialNo { get; set; }
-        public string seriesNo { get; set; }
-        public int amount { get; set; }
-        public string dueDate { get; set; }
-        public string description { get; set; }
-        public string fromIban { get; set; }
-        public string branchCode { get; set; }
-        public int currency { get; set; }
-        public string chequeStatus { get; set; }
-        public string reason { get; set; }
-        public string guaranteeStatus { get; set; }
-        public string blockStatus { get; set; }
-        public string locked { get; set; }
-        public List<Holderss> holderss { get; set; }
-        public string giveBack { get; set; }
-        public string curTransferDescripion { get; set; }
-        public string curTransferReason { get; set; }
+        public string? state { get; init; }
+        public string? chequeType { get; init; }
+        public string? chequeMedia { get; init; }
+        public string? sayadId { get; init; }
+        public string? serialNo { get; init; }
+        public string? seriesNo { get; init; }
+        public int? amount { get; init; }
+        public string? dueDate { get; init; }
+        public string? description { get; init; }
+        public string? fromIban { get; init; }
+        public string? branchCode { get; init; }
+        public int? currency { get; init; }
+        public string? chequeStatus { get; init; }
+        public string? reason { get; init; }
+        public string? guaranteeStatus { get; init; }
+        public string? blockStatus { get; init; }
+        public string? locked { get; init; }
+        public List<Holderss>? holderss { get; init; }
+        public string? giveBack { get; init; }
+        public string? curTransferDescripion { get; init; }
+        public string? curTransferReason { get; init; }
     }
 }
